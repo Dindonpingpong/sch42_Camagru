@@ -1,9 +1,4 @@
 <?php
-require_once 'components/header.php';
-require_once 'util.php';
-
-flashMessages();
-
 if (session_status() == PHP_SESSION_NONE)
     session_start();
 
@@ -13,15 +8,30 @@ if (!isset($_SESSION['name'])) {
     return;
 }
 
+require_once 'util.php';
+
 if (isset($_SESSION['name']) && isset($_GET['user']) && $_SESSION['name'] == $_GET['user']) {
     $salt = 'XyZzy12*_';
 
-    $stmt = $pdo->prepare('SELECT user_id, name, email, password, avatar, description_user FROM Users WHERE name = :nm');
+    $stmt = $pdo->prepare('SELECT user_id, name, email, password, avatar, description_user, notification FROM Users WHERE name = :nm');
     $stmt->execute(array(':nm' => $_GET['user'])); /* из сессии мб? */
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
     if ($row !== false) {
+        if ($row['notification'] == 'yes')
+            $checked = 'checked';
+
         if (isset($_POST['submit']) && $_POST['submit'] == 'Save') {
             $page = 'edit.php?user=' . $row['name'];
+
+            if (isset($_POST['notific']) && $_POST['notific'] == 'yes')
+                $notific = 'yes';
+            else
+                $notific = 'no';
+            $stmt = $pdo->prepare('UPDATE Users SET notification = :nf WHERE user_id = :uid');
+            $stmt->execute(array(
+                ':nf' => $notific,
+                ':uid' => $_SESSION['user_id']
+            ));
 
             // if (empty($_POST['username_up']) || empty($_POST['email'])) {
             if (strlen($_POST['username_up']) == 0 || strlen($_POST['email_up']) == 0) {
@@ -42,7 +52,6 @@ if (isset($_SESSION['name']) && isset($_GET['user']) && $_SESSION['name'] == $_G
                     $stmt = $pdo->prepare('UPDATE Users SET password = :ps WHERE user_id = :uid');
                     $stmt->execute(array(
                         ':ps' => hash('sha512', $salt . $_POST['repass_up']),
-                        // ':uid' => $_POST['profile_id']
                         ':uid' => $_SESSION['user_id']
                     ));
                 }
@@ -54,36 +63,29 @@ if (isset($_SESSION['name']) && isset($_GET['user']) && $_SESSION['name'] == $_G
                     ':nm' => $_POST['username_up'],
                     ':em' => $_POST['email_up'],
                     ':du' => $_POST['description'],
-                    // ':uid' => $_POST['profile_id']
                     ':uid' => $_SESSION['user_id']
                 ));
 
-                $upload_dir = 'images/' . $row['name'];
+                $upload_dir = 'images/' . $row['user_id'];
                 if (!file_exists($upload_dir))
-                    mkdir($upload_dir);
+                    mkdir($upload_dir, 0777, true);
+                $upload_dir .= '/avatar';
+                if (!file_exists($upload_dir))
+                    mkdir($upload_dir, 0777, true);
 
-                $format = array('image/jpeg', 'image/gif', 'image/png', 'image/svg+xml');
-                if (!in_array($_FILES['ava']['type'], $format)) {
-                    $_SESSION['error'] = 'Wrong type';
-                    header('Location: edit.php?user=' . $_SESSION['name']);
-                    return;
-                } else {
-                    $tmp_name = $_FILES['ava']['tmp_name'];
-                    $name = $upload_dir . '/' . date('HisdmY') . basename($_FILES['ava']['name']);
-                    // basename() может предотвратить атаку на файловую систему;
-                    // может быть целесообразным дополнительно проверить имя файла
-                    // echo $name;
-                    $move = move_uploaded_file($tmp_name, $name);
-                    if ($move) {
-                        $stmt = $pdo->prepare('UPDATE Users SET avatar = :av WHERE user_id = :uid');
-                        $stmt->execute(array(
-                            ':av' => $name,
-                            ':uid' => $_SESSION['user_id']
-                        ));
+                $tmp_name = $_FILES['ava']['tmp_name'];
+                $name = $upload_dir . '/' . date('HisdmY') . '_' . $row['user_id'] . '.png';
+                // basename() может предотвратить атаку на файловую систему;
+                // может быть целесообразным дополнительно проверить имя файла
+                $move = move_uploaded_file($tmp_name, $name);
+                if ($move) {
+                    $stmt = $pdo->prepare('UPDATE Users SET avatar = :av WHERE user_id = :uid');
+                    $stmt->execute(array(
+                        ':av' => $name,
+                        ':uid' => $_SESSION['user_id']
+                    ));
+                    if (isset($row['avatar']) && $row['avatar'] && $row['avatar'] != 'img/icon/user.svg')
                         unlink($row['avatar']);
-                        // header('Location: edit.php?user=' . $row['name']);
-                        // header('Location: me.php?user=' . $row['name'] . '&page=1&posts');
-                    }
                 }
                 header('Location: me.php?user=' . $row['name'] . '&page=1&posts');
             }
@@ -91,9 +93,11 @@ if (isset($_SESSION['name']) && isset($_GET['user']) && $_SESSION['name'] == $_G
         if (isset($_POST['submit']) && $_POST['submit'] == 'Cancel')
             header('Location: me.php?user=' . $row['name'] . '&page=1&posts');
     }
-    require_once 'components/edit-view.php';
 } else
     header('Location: index.php');
 
-
+require_once 'components/header.php';
+require_once 'components/edit-view.php';
 require_once 'components/footer.php';
+
+flashMessages();

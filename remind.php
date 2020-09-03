@@ -1,16 +1,8 @@
 <?php
-require_once 'components/header.php';
-require_once 'util.php';
-
 if (session_status() == PHP_SESSION_NONE)
     session_start();
 
-flashMessages();
-
-if (isset($_GET['name']))
-    require_once "components/reset-pass.php";
-else
-    require_once "components/remind-page.php";
+require_once 'util.php';
 
 if (isset($_POST['submit']) && $_POST['submit'] === 'Send') {
     $stmt = $pdo->prepare('SELECT name, email FROM Users WHERE email = :em');
@@ -26,12 +18,13 @@ if (isset($_POST['submit']) && $_POST['submit'] === 'Send') {
     $headers = "MIME-Version: 1.0\r\n";
     $headers .= "Content-type: text/html; charset=utf-8\r\n";
     // $headers .= "From: no-reply@example.com\r\n";
-    $headers .= "From: nyamilk@yandex.ru\r\n";
+    $headers .= "From: amilyukovadev@gmail.com\r\n";
     $message = '<p>Your username: ' . htmlentities($row['name']) . '</p>';
     $message .= '<p>To reset your password please follow the <a href="http://localhost:8080/remind.php?name=' . htmlentities($row['name']) . '">link</a></p>';
     mail($email, $subject, $message, $headers); /* проверка на ошибку? */
     /* прописать саксес ?? */
-    header('Location: remind.php');
+    
+    header('Location: index.php');
     return;
 }
 
@@ -45,4 +38,11 @@ if (isset($_POST['submit']) && $_POST['submit'] === 'Set new password') {
     return;
 }
 
+require_once 'components/header.php';
+if (isset($_GET['name']))
+    require_once "components/reset-pass.php";
+else
+    require_once "components/remind-page.php";
 require_once "components/footer.php";
+
+flashMessages();

@@ -1,18 +1,13 @@
 <?php
 require_once 'config/pdo.php';
 
-if (session_status() == PHP_SESSION_NONE)
-    session_start();
-
 function flashMessages()
 {
     if (isset($_SESSION['error'])) {
-        // echo '<p class="message_error">' . htmlentities($_SESSION['error']) . "</p>\n";
         echo '<script>alert("' . htmlentities($_SESSION['error']) . '");</script>';
         unset($_SESSION['error']);
     }
     if (isset($_SESSION['success'])) {
-        // echo '<p class="message_success">' . htmlentities($_SESSION['success']) . "</p>\n";
         echo '<script>alert("' . htmlentities($_SESSION['success']) . '");</script>';
         unset($_SESSION['success']);
     }
@@ -48,6 +43,12 @@ function checkEmail($pdo, $page)
 
 function checkPassword($pdo, $page)
 {
+    // if ((strlen($_POST['pass_up']) > 0 && strlen($_POST['pass_up'])) < 6
+    // || (strlen($_POST['repass_up']) > 0 && strlen($_POST['repass_up']) < 6)) {
+    //     $_SESSION['error'] = 'Password must be at least 6 characters long';
+    //     header('Location: ' . $page);
+    //     return;
+    // }
     if ($page == 'index.php') {
         if ($_POST['pass_up'] != $_POST['repass_up']) {
             $_SESSION['error'] = 'Password do not match';
@@ -65,12 +66,6 @@ function checkPassword($pdo, $page)
             return;
         }
     }
-    // if ((strlen($_POST['pass_up']) > 0 && strlen($_POST['pass_up'])) < 6
-    // || (strlen($_POST['repass_up']) > 0 && strlen($_POST['repass_up']) < 6)) {
-    //     $_SESSION['error'] = 'Password must be at least 6 characters long';
-    //     header('Location: ' . $page);
-    //     return;
-    // }
 }
 
 function paginationList($pageName, $pages, $text = null)

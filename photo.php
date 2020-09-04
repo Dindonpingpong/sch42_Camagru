@@ -80,10 +80,6 @@ if ($likes = $stmt->fetch(PDO::FETCH_ASSOC))
 else
     $src = '../img/icon/valentines-heart.svg'; /* - - - */
 
-if ($row !== false) {
-    
-} else
-    echo 'Error photo';
 
 require_once "components/header.php";
 require_once "components/photo-view.php";

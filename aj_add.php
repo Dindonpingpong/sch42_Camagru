@@ -15,21 +15,21 @@ if ($comments > 0) {
             echo '</a></div>';
             echo '<div class="page_info_user"><span>' . htmlentities($comment['name']) . '</span> '; /* проверить */
             echo '<time>' . date("d M Y G:i", strtotime($comment['created_at_comment'])) . '</time>';
-            // if ($_SESSION['user_id'] == $row['user_id'] || $_SESSION['user_id'] == $comment['user_id']) {
-            //     echo '<a href="#openModal' . $i . '">';
-            //     echo '<img class="page-img_delete" src="img/icon/cancel.svg">';
-            //     echo '</a>';
-            //     echo '<div id="openModal' . $i . '" class="modal">';
-            //     echo '<div class="modal-dialog">';
-            //     echo '<div class="modal-content">';
-            //     echo '<p class="modal-title">Delete comment?</p>';
-            //     echo '<p>This can’t be undone and it will be removed from your profile.</p>';
-            //     echo '<form method="post" action="photo.php?img=' . $_GET['img'] . '">';
-            //     echo '<input type="hidden" name="comment_id" value="' . htmlentities($comment['comment_id']) . '">';
-            //     echo '<input type="submit" name="delete" class="btn-blue" value="Delete">';
-            //     echo '<input type="submit" name="close" class="btn-gray" value="Close">';
-            //     echo '</form></div></div></div>';
-            // }
+            if ($_SESSION['user_id'] == $row['user_id'] || $_SESSION['user_id'] == $comment['user_id']) {
+                echo '<a href="#openModal' . $i . '">';
+                echo '<img class="page-img_delete" src="img/icon/cancel.svg">';
+                echo '</a>';
+                echo '<div id="openModal' . $i . '" class="modal">';
+                echo '<div class="modal-dialog">';
+                echo '<div class="modal-content">';
+                echo '<p class="modal-title">Delete comment?</p>';
+                echo '<p>This can’t be undone and it will be removed from your profile.</p>';
+                echo '<form method="post" action="photo.php?img=' . $_GET['img'] . '">';
+                echo '<input type="hidden" name="comment_id" value="' . htmlentities($comment['comment_id']) . '">';
+                echo '<input type="submit" name="delete" class="btn-blue" value="Delete">';
+                echo '<input type="submit" name="close" class="btn-gray" value="Close">';
+                echo '</form></div></div></div>';
+            }
             echo '<p>' . $comment['comment'] . '</p>';
             echo '</div></article>';
         }

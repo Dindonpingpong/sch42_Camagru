@@ -44,11 +44,11 @@
         <div class="page-img__comments">
             <div class="page-img__comments-set">
                 <h2>Comments</h2>
-                <form class="page-img__comments-set__form" method="post">
+                <div class="page-img__comments-set__form">
                     <span class="span_comment">No more than 80 characters</span>
                     <textarea id="text" name="text_comment" rows="1" placeholder="Leave a comment"></textarea>
-                    <button id="save-btn" class="btn-blue" type="submit">Send</button>
-                </form>
+                    <button class="btn-blue" type="submit">Send</button>
+                </div>
             </div>
 
             <div class="page-img__comments-list">
@@ -60,8 +60,7 @@
 
 <script>
     (function() {
-        document.getElementById("save-btn").addEventListener("click", function() {
-
+        function getComments() {
             let xhttp;
             xhttp = new XMLHttpRequest();
             xhttp.onreadystatechange = function() {
@@ -69,9 +68,29 @@
                     document.querySelector('.page-img__comments-list').innerHTML = this.responseText;
                 }
             };
-            
-            xhttp.open("GET", "aj_add.php?img=6", true);
+
+            xhttp.open("GET", "aj_add.php?img=1", true);
             xhttp.send();
+        }
+
+        document.querySelector(".btn-blue").addEventListener("click", function() {
+            let text = document.getElementById('text').value;
+            let param = "comment=" + text;
+            let xhttp;
+
+            xhttp = new XMLHttpRequest();
+            xhttp.open("POST", "aj_new.php", true);
+            xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+            xhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    getComments();
+                    document.getElementById('text').value = '';
+                }
+            };
+
+            xhttp.send(param);
         }, false);
+
+        window.addEventListener("load", getComments, false);
     })();
 </script>

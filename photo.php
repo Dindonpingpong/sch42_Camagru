@@ -17,6 +17,8 @@ if (isset($_SESSION['confirm']) && $_SESSION['confirm'] == 'no') {
     return;
 }
 
+$_SESSION['img'] = $_GET['img'];
+
 if (isset($_POST['likes'])) {
     $stmt = $pdo->prepare('SELECT * FROM Likes WHERE user_id = :uid AND img_id = :iid');
     $stmt->execute(array(
@@ -79,35 +81,7 @@ else
     $src = '../img/icon/valentines-heart.svg'; /* - - - */
 
 if ($row !== false) {
-    if (isset($_POST['text_comment']) && $_POST['text_comment']) /* valid */ {
-        $stmt = $pdo->prepare('INSERT INTO Comment (user_id, img_id, comment) VALUES (:uid, :iid, :cm)');
-        $stmt->execute(array(
-            ':uid' => $_SESSION['user_id'],
-            ':iid' => $_GET['img'],
-            ':cm' => nl2br(mb_substr(htmlentities($_POST['text_comment']), 0, 80))
-        ));
-        /* mail */
-        if ($row['notification'] == 'yes') {
-            $email = $row['email'];
-            $subject = 'New comment';
-            $headers = "MIME-Version: 1.0\r\n";
-            $headers .= "Content-type: text/html; charset=utf-8\r\n";
-            $headers .= "From: amilyukovadev@gmail.com\r\n";
-            $message = '<p>You have new comment on <a href="http://localhost:8080/photo.php?img=' . $_GET['img'] . '">photo</a></p>
-            <p>To unsubscribe from this thread, please <a href="">click here</a></p>';
-            mail($email, $subject, $message, $headers);
-        }
-        header('Location: photo.php?img=' . $_GET['img']);
-    }
     
-
-    if (isset($_POST['delete'])) {
-        if (isset($_POST['comment_id']) && $_POST['comment_id'] && $_SESSION['user_id']) {
-            $stmt = $pdo->prepare('DELETE FROM Comment WHERE comment_id = :cid');
-            $stmt->execute(array(':cid' => $_POST['comment_id'])); /* проверить */
-            header('Location: photo.php?img=' . $_GET['img']);
-        }
-    }
 } else
     echo 'Error photo';
 

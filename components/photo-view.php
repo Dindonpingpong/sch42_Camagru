@@ -47,7 +47,7 @@
                 <div class="page-img__comments-set__form">
                     <span class="span_comment">No more than 80 characters</span>
                     <textarea id="text" name="text_comment" rows="1" placeholder="Leave a comment"></textarea>
-                    <button class="btn-blue" type="submit">Send</button>
+                    <button class="btn-blue btn-save" type="submit">Send</button>
                 </div>
             </div>
 
@@ -62,18 +62,42 @@
     (function() {
         function getComments() {
             let xhttp;
+            let url = "aj_get.php?";
+
             xhttp = new XMLHttpRequest();
             xhttp.onreadystatechange = function() {
                 if (this.readyState == 4 && this.status == 200) {
                     document.querySelector('.page-img__comments-list').innerHTML = this.responseText;
-                }
-            };
+                    document.querySelectorAll(".btn-confirm-del").forEach(item => item.addEventListener("click", function() {
+                        let param = "commentID=" + this.id;
+                        let xhttp;
 
-            xhttp.open("GET", "aj_add.php?img=1", true);
+                        xhttp = new XMLHttpRequest();
+                        xhttp.open("POST", "aj_delete.php", true);
+                        xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                        xhttp.onreadystatechange = function() {
+                            if (this.readyState == 4 && this.status == 200) {
+                                console.log("ok");
+                                getComments();
+                            }
+                        };
+
+                        xhttp.send(param);
+                    }, false));
+
+                    document.querySelectorAll(".page-img_delete").forEach(item => item.addEventListener("click", function() {
+                        document.querySelectorAll(".modal").forEach(item => item.style.display = "block");
+                    }, false));
+                    document.querySelectorAll(".btn-close").forEach(item => item.addEventListener("click", function() {
+                        document.querySelectorAll(".modal").forEach(item => item.style.display = "none");
+                    }, false));
+                };
+            };
+            xhttp.open("GET", url, true);
             xhttp.send();
         }
 
-        document.querySelector(".btn-blue").addEventListener("click", function() {
+        document.querySelector(".btn-save").addEventListener("click", function() {
             let text = document.getElementById('text').value;
             let param = "comment=" + text;
             let xhttp;

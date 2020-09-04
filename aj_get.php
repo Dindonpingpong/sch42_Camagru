@@ -1,8 +1,11 @@
 <?php
+if (session_status() == PHP_SESSION_NONE)
+    session_start();
+
 require_once 'util.php';
 
 $add_comm = $pdo->prepare('SELECT * FROM Comment JOIN Users ON Comment.user_id = Users.user_id WHERE img_id = :iid ORDER BY comment_id');
-$add_comm->execute(array(':iid' => $_GET['img']));
+$add_comm->execute(array(':iid' => $_SESSION['img']));
 $comments = $add_comm->rowCount();
 if ($comments > 0) {
     for ($i = 1; $i <= $comments; $i++) {
@@ -24,11 +27,10 @@ if ($comments > 0) {
                 echo '<div class="modal-content">';
                 echo '<p class="modal-title">Delete comment?</p>';
                 echo '<p>This can’t be undone and it will be removed from your profile.</p>';
-                echo '<form method="post" action="photo.php?img=' . $_GET['img'] . '">';
-                echo '<input type="hidden" name="comment_id" value="' . htmlentities($comment['comment_id']) . '">';
-                echo '<input type="submit" name="delete" class="btn-blue" value="Delete">';
-                echo '<input type="submit" name="close" class="btn-gray" value="Close">';
-                echo '</form></div></div></div>';
+                echo '<div>';
+                echo '<input id="' . htmlentities($comment['comment_id']) . '" type="submit" name="delete" class="btn-blue btn-confirm-del" value="Delete">';
+                echo '<input type="submit" name="close" class="btn-gray btn-close" value="Close">';
+                echo '</div></div></div></div>';
             }
             echo '<p>' . $comment['comment'] . '</p>';
             echo '</div></article>';

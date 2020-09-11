@@ -50,6 +50,7 @@ CREATE TABLE Likes
 (
 	user_id BIGINT UNSIGNED NOT NULL,
 	img_id BIGINT UNSIGNED NOT NULL,
+    created_at_like DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES Users(user_id) ON DELETE CASCADE,
     FOREIGN KEY (img_id) REFERENCES Photo(img_id) ON DELETE CASCADE
 );
@@ -81,18 +82,31 @@ CREATE TABLE Filters
     PRIMARY KEY (filter_id)
 );
 
+-- INSERT INTO Stickers (path) VALUES
+-- ("img/stickers/1.png"),
+-- ("img/stickers/2.png"),
+-- ("img/stickers/3.png"),
+-- ("img/stickers/4.png"),
+-- ("img/stickers/5.png");
 INSERT INTO Stickers (path) VALUES
-("img/stickers/1.png"),
-("img/stickers/2.png"),
-("img/stickers/3.png"),
-("img/stickers/4.png"),
-("img/stickers/5.png");
+("img/stickers/var\ II/angry.svg"),
+("img/stickers/var\ II/coffee.svg"),
+("img/stickers/var\ II/crying.svg"),
+("img/stickers/var\ II/king.svg"),
+("img/stickers/var\ II/sick.svg"),
+("img/stickers/var\ II/bathing.svg"),
+("img/stickers/var\ II/cold.svg"),
+("img/stickers/var\ II/rainbow.svg"),
+("img/stickers/var\ II/in-love.svg"),
+("img/stickers/var\ II/laughing.svg"),
+("img/stickers/var\ II/pirate.svg");
+
 INSERT INTO Filters (path) VALUES
-("img/filters/1.jpeg"),
+("img/filters/1.png"),
 ("img/filters/2.png"),
 ("img/filters/3.png"),
 ("img/filters/4.png"),
-("img/filters/5.jpeg");
+("img/filters/5.png");
 
 
 INSERT INTO Users (name, email, password, confirm) VALUES
@@ -102,53 +116,53 @@ INSERT INTO Users (name, email, password, confirm) VALUES
 
 UPDATE Users SET status='admin' WHERE name='admin';
 
-INSERT INTO Photo (user_id, path) VALUES
-('2', 'img/test/test2.jpg'),
-('2', 'img/test/test3.jpg'),
-('2', 'img/test/test4.jpg'),
-('2', 'img/test/test2.jpg'),
-('2', 'img/test/test3.jpg'),
-('2', 'img/test/test4.jpg'),
-('2', 'img/test/test2.jpg'),
-('2', 'img/test/test3.jpg'),
-('2', 'img/test/test4.jpg'),
-('3', 'img/test/test5.jpg'),
-('3', 'img/test/test6.jpg'),
-('3', 'img/test/test5.jpg'),
-('3', 'img/test/test6.jpg'),
-('3', 'img/test/test5.jpg'),
-('3', 'img/test/test6.jpg'),
-('3', 'img/test/test6.jpg'),
-('3', 'img/test/test7.jpg'),
-('3', 'img/test/test8.jpg'),
-('3', 'img/test/test9.png'),
-('3', 'img/test/test6.jpg'),
-('3', 'img/test/test7.jpg'),
-('3', 'img/test/test8.jpg'),
-('3', 'img/test/test9.png'),
-('3', 'img/test/test6.jpg'),
-('3', 'img/test/test7.jpg'),
-('3', 'img/test/test8.jpg'),
-('3', 'img/test/test9.png'),
-('3', 'img/test/test6.jpg'),
-('3', 'img/test/test7.jpg'),
-('3', 'img/test/test8.jpg'),
-('3', 'img/test/test9.png'),
-('3', 'img/test/test6.jpg'),
-('3', 'img/test/test7.jpg'),
-('3', 'img/test/test8.jpg'),
-('3', 'img/test/test9.png'),
-('3', 'img/test/test6.jpg'),
-('3', 'img/test/test7.jpg'),
-('3', 'img/test/test8.jpg'),
-('3', 'img/test/test9.png'),
-('3', 'img/test/test6.jpg'),
-('3', 'img/test/test7.jpg'),
-('3', 'img/test/test8.jpg'),
-('3', 'img/test/test9.png');
+-- INSERT INTO Photo (user_id, path) VALUES
+-- ('2', 'img/test/test2.jpg'),
+-- ('2', 'img/test/test3.jpg'),
+-- ('2', 'img/test/test4.jpg'),
+-- ('2', 'img/test/test2.jpg'),
+-- ('2', 'img/test/test3.jpg'),
+-- ('2', 'img/test/test4.jpg'),
+-- ('2', 'img/test/test2.jpg'),
+-- ('2', 'img/test/test3.jpg'),
+-- ('2', 'img/test/test4.jpg'),
+-- ('3', 'img/test/test5.jpg'),
+-- ('3', 'img/test/test6.jpg'),
+-- ('3', 'img/test/test5.jpg'),
+-- ('3', 'img/test/test6.jpg'),
+-- ('3', 'img/test/test5.jpg'),
+-- ('3', 'img/test/test6.jpg'),
+-- ('3', 'img/test/test6.jpg'),
+-- ('3', 'img/test/test7.jpg'),
+-- ('3', 'img/test/test8.jpg'),
+-- ('3', 'img/test/test9.png'),
+-- ('3', 'img/test/test6.jpg'),
+-- ('3', 'img/test/test7.jpg'),
+-- ('3', 'img/test/test8.jpg'),
+-- ('3', 'img/test/test9.png'),
+-- ('3', 'img/test/test6.jpg'),
+-- ('3', 'img/test/test7.jpg'),
+-- ('3', 'img/test/test8.jpg'),
+-- ('3', 'img/test/test9.png'),
+-- ('3', 'img/test/test6.jpg'),
+-- ('3', 'img/test/test7.jpg'),
+-- ('3', 'img/test/test8.jpg'),
+-- ('3', 'img/test/test9.png'),
+-- ('3', 'img/test/test6.jpg'),
+-- ('3', 'img/test/test7.jpg'),
+-- ('3', 'img/test/test8.jpg'),
+-- ('3', 'img/test/test9.png'),
+-- ('3', 'img/test/test6.jpg'),
+-- ('3', 'img/test/test7.jpg'),
+-- ('3', 'img/test/test8.jpg'),
+-- ('3', 'img/test/test9.png'),
+-- ('3', 'img/test/test6.jpg'),
+-- ('3', 'img/test/test7.jpg'),
+-- ('3', 'img/test/test8.jpg'),
+-- ('3', 'img/test/test9.png');
 
-INSERT INTO Photo (user_id, path) VALUES ('1', 'img/test/th.jpg');
-INSERT INTO Photo (user_id, path) VALUES ('1', 'img/test/tw.jpg');
+-- INSERT INTO Photo (user_id, path) VALUES ('1', 'img/test/th.jpg');
+-- INSERT INTO Photo (user_id, path) VALUES ('1', 'img/test/tw.jpg');
 
-INSERT INTO Users (name, email, password, confirm) VALUES ('test', 'test@test.ru', SHA2('XyZzy12*_123', 512), 'yes');
-INSERT INTO Users (name, email, password, confirm) VALUES ('kus', 'nyamilk@yandex.ru', SHA2('XyZzy12*_1', 512), 'yes');
+-- INSERT INTO Users (name, email, password, confirm) VALUES ('kus', 'nyamilk@yandex.ru', SHA2('XyZzy12*_1', 512), 'yes');
+-- INSERT INTO Users (name, email, password, confirm) VALUES ('test', 'test@test', SHA2('XyZzy12*_1', 512), 'no');

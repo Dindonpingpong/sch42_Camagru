@@ -1,10 +1,11 @@
+"use strict";
+
 (function () {
     let width = 900;
     let height = 0;
 
     let streaming = false;
     let isInited = false;
-    let i = 1;
 
     let photo = document.getElementById('origin');
     let preview = document.getElementById('preview');
@@ -14,6 +15,7 @@
     let discard = document.getElementById('discard');
     let save = document.getElementById('save');
     let save_btn = document.getElementById('save_btn');
+
     let file_upload = document.getElementById('file-upload');
 
     let snapchat = {
@@ -21,6 +23,7 @@
         isClicked: false,
         stickers: []
     };
+
     let sticker_width = 100;
     let sticker_height = 100;
     let start_pos_x = 100;
@@ -29,6 +32,10 @@
     function startup() {
         if (isInited)
             destroyFiltersAndStickers();
+        save_btn.disabled = true;
+        save_btn.style.background = "#E6E7ED";
+        save_btn.style.borderColor = "#E6E7ED";
+        save_btn.style.cursor = "auto";
         clear();
         navigator.mediaDevices.getUserMedia({
             video: true,
@@ -60,6 +67,10 @@
 
         shoot.addEventListener('click', function (ev) {
             takePicture();
+            save_btn.disabled = false;
+            save_btn.style.background = "#49D1CA";
+            save_btn.style.borderColor = "#49D1CA";
+            save_btn.style.cursor = "pointer";
             ev.preventDefault();
         }, false);
         shoot.removeAttribute('disabled');
@@ -246,32 +257,19 @@
             let reader = new FileReader();
             save_btn.removeAttribute("disabled");
             reader.onload = function (e) {
-                filter = "none";
-                sticker = null;
+                clear();
                 document.getElementById('preview')
                     .setAttribute('src', e.target.result);
                 document.getElementById('origin')
                     .setAttribute('src', e.target.result);
                 save.value = preview.src;
+                save_btn.disabled = false;
+                save_btn.style.background = "#49D1CA";
+                save_btn.style.borderColor = "#49D1CA";
+                save_btn.style.cursor = "pointer";
             };
             reader.readAsDataURL(this.files[0]);
             file_upload.value = "";
         }
     }, false);
-
-    // save.addEventListener("click", function () {
-    //     let src = preview.src;
-    //     const request = new XMLHttpRequest();
-    //     const url = "add.php";
-    //     const param = "src=" + src;
-    //     request.open("POST", url, true);
-    //     request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-
-    //     request.addEventListener("readystatechange", () => {
-    //         if (request.readyState === 4 && request.status === 200) {
-    //             console.log(request.responseText);
-    //         }
-    //     });
-    //     request.send(param);
-    // }, false);
 })();

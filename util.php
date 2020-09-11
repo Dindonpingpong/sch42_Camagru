@@ -1,5 +1,8 @@
 <?php
 require_once 'config/pdo.php';
+require_once 'model/util-model.php';
+
+$salt = 'XyZzy12*_';
 
 function flashMessages()
 {
@@ -13,58 +16,145 @@ function flashMessages()
     }
 }
 
+function checkSignIn()
+{
+    if (!isset($_SESSION['name'])) {
+        $_SESSION['error'] = 'You must sign in the site.';
+        header('Location: index.php');
+        // return false;
+    }
+    if (isset($_SESSION['confirm']) && $_SESSION['confirm'] == 'no') {
+        $_SESSION['error'] = 'Confirm your email address.';
+        header('Location: gallery.php?sort=all&page=1');
+        // return false;
+    }
+    return true;
+}
+
+function checkLenInput($value, $msg)
+{
+    if (isset($_POST[$value]) && strlen($_POST[$value]) > 80) {
+        $_SESSION['error'] = $msg . ' must be no more than 80 characters';
+        return false;
+    }
+    return true;
+}
+function validateInputName($value)
+{
+    $regex = '/^(?=[a-zA-Z0-9._]{6,80}$)(?!.*[_.]{2})[^_.].*[^_.]$/';
+    if (preg_match($regex, $value))
+        return true;
+    return false;
+}
+
+function validateInputPass($password)
+{
+    $uppercase = preg_match('/[A-Z]/', $password);
+    $lowercase = preg_match('/[a-z]/', $password);
+    $number = preg_match('/[0-9]/', $password);
+    $specialChars = preg_match('/[^\w]/', $password);
+
+    if (!$uppercase || !$lowercase || !$number || !$specialChars || strlen($password) < 6)
+        return false;
+    return true;
+}
+
 function checkUserName($pdo, $page)
 {
-    $stmt = $pdo->prepare('SELECT name FROM Users WHERE name = :nm');
-    $stmt->execute(array(':nm' => $_POST['username_up']));
-    $row = $stmt->fetch(PDO::FETCH_ASSOC);
-    if ($row !== false) {
-        $_SESSION['error'] = 'That username is already taken';
+    if (checkLenInput('username_up', 'Username') == false) {
         header('Location: ' . $page);
-        return;
+        return false;
+    }
+
+    if (!validateInputName($_POST['username_up'])) {
+        $_SESSION['error'] = 'This username is invalid. Username must contain 6-80 alphabet characters, . or _.';
+        header('Location: ' . $page);
+        return false;
+    }
+
+    if (getUserName($pdo, $_POST['username_up'])) {
+        $_SESSION['error'] = 'This username is already taken';
+        header('Location: ' . $page);
+        return false;
     }
     if ($page == 'index.php')
-        checkEmail($pdo, $page);
+        if (checkEmail($pdo, $page) == false)
+            return false;
+    return true;
 }
 
 function checkEmail($pdo, $page)
 {
-    $stmt = $pdo->prepare('SELECT email FROM Users WHERE email = :em');
-    $stmt->execute(array(':em' => $_POST['email_up']));
-    $row = $stmt->fetch(PDO::FETCH_ASSOC);
-    if ($row !== false) {
-        $_SESSION['error'] = 'That email address is already taken';
+    if (!checkLenInput('email_up', 'Email')) {
         header('Location: ' . $page);
-        return;
+        return false;
+    }
+
+    if (!filter_var($_POST['email_up'], FILTER_VALIDATE_EMAIL)) {
+        $_SESSION['error'] = 'This email address is invalid';
+        header('Location: ' . $page);
+        return false;
+    }
+
+    if (getEmail($pdo, trim($_POST['email_up']))) {
+        $_SESSION['error'] = 'This email address is already taken';
+        header('Location: ' . $page);
+        return false;
     }
     if ($page == 'index.php')
-        checkPassword($pdo, $page);
+        if (checkPassword($pdo, $page) == false)
+            return false;
+    return true;
 }
 
 function checkPassword($pdo, $page)
 {
-    // if ((strlen($_POST['pass_up']) > 0 && strlen($_POST['pass_up'])) < 6
-    // || (strlen($_POST['repass_up']) > 0 && strlen($_POST['repass_up']) < 6)) {
-    //     $_SESSION['error'] = 'Password must be at least 6 characters long';
-    //     header('Location: ' . $page);
-    //     return;
-    // }
+    if (!checkLenInput('repass_up', 'Password')) {
+        header('Location: ' . $page);
+        return false;
+    }
+
+    if (!validateInputPass($_POST['pass_up'])) {
+        $_SESSION['error'] = 'Password must be at least 6 characters in length and must include at least one upper case letter, one number, and one special character.';
+        header('Location: ' . $page);
+        return false;
+    }
+
     if ($page == 'index.php') {
         if ($_POST['pass_up'] != $_POST['repass_up']) {
             $_SESSION['error'] = 'Password do not match';
             header('Location: ' . $page);
-            return;
+            return false;
         }
     } else {
         $salt = 'XyZzy12*_';
-        $stmt = $pdo->prepare('SELECT name FROM Users WHERE password = :ps');
-        $stmt->execute(array(':ps' => hash('sha512', $salt . $_POST['pass_up'])));
-        $row = $stmt->fetch(PDO::FETCH_ASSOC);
-        if ($row === false) {
+        if (!getPassword($pdo, hash('sha512', $salt . $_POST['pass_up']))) {
             $_SESSION['error'] = 'Wrong password';
             header('Location: ' . $page);
-            return;
+            return false;
         }
+    }
+    return true;
+}
+
+function deleteNotConfirmUser($pdo, $name)
+{
+    deleteUser($pdo);
+    if (!getUserName($pdo, $name)) {
+        session_destroy();
+        return true;
+    }
+    return false;
+}
+
+function checkConfirmUser($pdo)
+{
+    if ($row = getConfirmInfo($pdo, $_SESSION['name'])) {
+        if ($row['confirm'] == 'yes') {
+            $_SESSION['confirm'] = $row['confirm'];
+            return true;
+        }
+        return false;
     }
 }
 
@@ -116,20 +206,30 @@ function paginationList($pageName, $pages, $text = null)
     echo '</div>';
 }
 
-function countLikes($pdo)
+function sendNotification($value, $elem, $page)
 {
-    $stmt = $pdo->prepare('SELECT * FROM Likes WHERE img_id = :iid');
-    $stmt->execute(array(
-        ':iid' => $_GET['img']
-    ));
+    $headers = "MIME-Version: 1.0\r\n";
+    $headers .= "Content-type: text/html; charset=utf-8\r\n";
+    $headers .= "From: amilyukovadev@gmail.com\r\n";
 
-    $count = $stmt->rowCount();
-
-    $stmt = $pdo->prepare('UPDATE Photo SET likes = :c WHERE img_id = :iid');
-    $stmt->execute(array(
-        ':c' => $count,
-        ':iid' => $_GET['img']
-    ));
+    if ($page == 'index.php') {
+        $email = $_POST[$value];
+        $subject = 'Confirm email address';
+        $message = '<p>To complete the sign-up process, please follow the <a href="http://localhost:8080/components/confirm.php?hash=' . $elem . '">link.</a></p>';
+    } elseif ($page == 'remind.php') {
+        $email = $value;
+        $subject = 'Remind username and password';
+        $message = '<p>Your username: ' . htmlentities($elem) . '.</p>';
+        $message .= '<p>To reset your password please follow the <a href="http://localhost:8080/remind.php?name=' . htmlentities($elem) . '">link.</a></p>';
+    } elseif ($page == 'comments.php') {
+        echo $elem['0'];
+        $email = $value;
+        $subject = 'New comment';
+        $message = '<p>You have new comment on <a href="http://localhost:8080/photo.php?img=' . $elem[1] . '">photo.</a></p>';
+        $message .= '<blockquote><p>' . htmlentities($elem[0]) . '</p>';
+        $message .= '<cite>avtor: ' . $_SESSION['name'] . '</cite></blockquote>';
+    }
+    mail($email, $subject, $message, $headers);
 }
 
 function changeNumber($nb)

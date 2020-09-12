@@ -15,9 +15,9 @@
         </div>
 
         <div class="photo-edit__canvas">
-            <img id="preview" src="img/preview.png" alt="preview">
+            <img id="preview" src="img/preview.svg" alt="preview">
 
-            <img id="origin" src="img/preview.png">
+            <img id="origin" src="img/preview.svg">
             <video id="video"></video>
             <canvas id="canvas"></canvas>
             <form><input type='button' id='snapshot' value="snapshot"></form>

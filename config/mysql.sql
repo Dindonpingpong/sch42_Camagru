@@ -89,17 +89,17 @@ CREATE TABLE Filters
 -- ("img/stickers/4.png"),
 -- ("img/stickers/5.png");
 INSERT INTO Stickers (path) VALUES
-("img/stickers/var\ II/angry.svg"),
-("img/stickers/var\ II/coffee.svg"),
-("img/stickers/var\ II/crying.svg"),
-("img/stickers/var\ II/king.svg"),
-("img/stickers/var\ II/sick.svg"),
-("img/stickers/var\ II/bathing.svg"),
-("img/stickers/var\ II/cold.svg"),
-("img/stickers/var\ II/rainbow.svg"),
-("img/stickers/var\ II/in-love.svg"),
-("img/stickers/var\ II/laughing.svg"),
-("img/stickers/var\ II/pirate.svg");
+("img/stickers/1.svg"),
+("img/stickers/2.svg"),
+("img/stickers/4.svg"),
+("img/stickers/5.svg"),
+("img/stickers/6.svg"),
+("img/stickers/7.svg"),
+("img/stickers/8.svg"),
+("img/stickers/9.svg"),
+("img/stickers/10.svg"),
+("img/stickers/11.svg"),
+("img/stickers/12.svg");
 
 INSERT INTO Filters (path) VALUES
 ("img/filters/1.png"),

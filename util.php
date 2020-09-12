@@ -210,7 +210,7 @@ function sendNotification($value, $elem, $page)
 {
     $headers = "MIME-Version: 1.0\r\n";
     $headers .= "Content-type: text/html; charset=utf-8\r\n";
-    $headers .= "From: amilyukovadev@gmail.com\r\n";
+    $headers .= "From: rkina7@gmail.com\r\n";
 
     if ($page == 'index.php') {
         $email = $_POST[$value];

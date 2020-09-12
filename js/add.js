@@ -68,8 +68,8 @@
         shoot.addEventListener('click', function (ev) {
             takePicture();
             save_btn.disabled = false;
-            save_btn.style.background = "#49D1CA";
-            save_btn.style.borderColor = "#49D1CA";
+            save_btn.style.background = "#3C9DD0";
+            save_btn.style.borderColor = "#3C9DD0";
             save_btn.style.cursor = "pointer";
             ev.preventDefault();
         }, false);
@@ -190,7 +190,7 @@
                 if (el.isActive) {
                     context.arc(el.x + sticker_width / 2, el.y + sticker_width / 2, sticker_width / 2, 0, 2 * Math.PI);
                     context.lineWidth = 10;
-                    context.strokeStyle = "#49d1ca";
+                    context.strokeStyle = "#3C9DD0";
                     context.stroke();
                 }
                 context.drawImage(el['elem'], el.x, el.y, sticker_width, sticker_height);
@@ -204,7 +204,7 @@
     function clear() {
         snapchat['filter'] = "none";
         snapchat['stickers'] = [];
-        preview.src = "img/preview.png";
+        preview.src = "img/preview.svg";
     }
 
     discard.addEventListener('click', function () {
@@ -264,8 +264,8 @@
                     .setAttribute('src', e.target.result);
                 save.value = preview.src;
                 save_btn.disabled = false;
-                save_btn.style.background = "#49D1CA";
-                save_btn.style.borderColor = "#49D1CA";
+                save_btn.style.background = "#3C9DD0";
+                save_btn.style.borderColor = "#3C9DD0";
                 save_btn.style.cursor = "pointer";
             };
             reader.readAsDataURL(this.files[0]);

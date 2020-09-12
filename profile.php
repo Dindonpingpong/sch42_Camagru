@@ -59,7 +59,7 @@ if (checkSignIn()) {
                     header('Location: profile.php?user=' . $_GET['user'] . '&page=1&favorites');
                     // return;
                 }
-            }
+            }   
 
             if (isset($_GET['favorites']))
                 $pages = $pages_likes + 1;

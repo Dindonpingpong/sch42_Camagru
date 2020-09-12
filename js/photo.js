@@ -46,7 +46,7 @@
                     document.getElementById("openModal" + modalID).style.display = "none";
                 }, false));
             };
-        };
+        }; 
         xhttp.send(param);
     }
 
@@ -86,8 +86,8 @@
             btn.style.cursor = "auto";
         } else {
             btn.disabled = false;
-            btn.style.background = "#49D1CA";
-            btn.style.borderColor = "#49D1CA";
+            btn.style.background = "#3C9DD0";
+            btn.style.borderColor = "#3C9DD0";
             btn.style.cursor = "pointer";
         }
     });

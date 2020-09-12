@@ -1,2 +1,5 @@
 https://www.flaticon.com/packs/emoji-people-1
 https://www.flaticon.com/packs/halloween-113g
+
+c1 = #086CA2
+c2 = #3C9DD0
